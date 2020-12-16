@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Movies_BE.Entities;
 
 namespace Movies_BE.Repos
@@ -18,6 +19,10 @@ namespace Movies_BE.Repos
 
         public List<Genres> GetGenres() {
             return _genres;
+        }
+
+        public Genres GetGenreById(int Id) {
+            return _genres.FirstOrDefault(x => x.id == Id);
         }
     }
 }
