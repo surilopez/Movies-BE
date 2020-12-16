@@ -27,8 +27,8 @@ namespace Movies_BE.Controllers
         }
 
         [HttpGet("{Id:int}")]
-        public ActionResult<Genres> Get(int Id) {
-            var genre = repos.GetGenreById(Id);
+        public async Task<ActionResult<Genres>> Get(int Id) {
+            var genre = await repos.GetGenreById(Id);
 
             if (genre==null)
             {
@@ -38,11 +38,12 @@ namespace Movies_BE.Controllers
         }
 
         [HttpPost]
-        public void Post()
+        public ActionResult Post([FromBody] Genres genre)
         {
+            return NoContent();
         }
         [HttpPut]
-        public ActionResult Put()
+        public ActionResult Put([FromBody] Genres genre)
         {
             return NoContent();
         }

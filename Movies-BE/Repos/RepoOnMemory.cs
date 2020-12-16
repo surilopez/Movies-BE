@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Movies_BE.Entities;
 
 namespace Movies_BE.Repos
@@ -21,7 +23,9 @@ namespace Movies_BE.Repos
             return _genres;
         }
 
-        public Genres GetGenreById(int Id) {
+        public async Task<Genres> GetGenreById(int Id) {
+
+            await Task.Delay(1);
             return _genres.FirstOrDefault(x => x.id == Id);
         }
     }
