@@ -3,7 +3,7 @@ using Movies_BE.Entities;
 
 namespace Movies_BE.Repos
 {
-    public class RepoOnMemory
+    public class RepoOnMemory:IRepos
     {
         private List<Genres> _genres;
         public RepoOnMemory()
