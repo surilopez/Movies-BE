@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Movies_BE.Entities;
 using Movies_BE.Repos;
 
 namespace Movies_BE.Controllers
 {
     [Route("api/genres")]
+    [ApiController]
     public class GenresController:ControllerBase
     {
         private readonly IRepos repos;
@@ -28,6 +30,8 @@ namespace Movies_BE.Controllers
 
         [HttpGet("{Id:int}")]
         public async Task<ActionResult<Genres>> Get(int Id) {
+
+         
             var genre = await repos.GetGenreById(Id);
 
             if (genre==null)
@@ -40,11 +44,13 @@ namespace Movies_BE.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] Genres genre)
         {
+          
             return NoContent();
         }
         [HttpPut]
         public ActionResult Put([FromBody] Genres genre)
         {
+         
             return NoContent();
         }
 
