@@ -8,6 +8,7 @@ namespace Movies_BE.Repos
 {
   public interface IRepos
     {
+        void AddGenre(Genres genre);
         Task<Genres> GetGenreById(int Id);
         List<Genres> GetGenres();
     }

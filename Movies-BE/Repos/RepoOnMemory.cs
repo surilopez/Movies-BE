@@ -6,7 +6,7 @@ using Movies_BE.Entities;
 
 namespace Movies_BE.Repos
 {
-    public class RepoOnMemory:IRepos
+    public class RepoOnMemory : IRepos
     {
         private List<Genres> _genres;
         public RepoOnMemory()
@@ -19,14 +19,23 @@ namespace Movies_BE.Repos
         }
 
 
-        public List<Genres> GetGenres() {
+        public List<Genres> GetGenres()
+        {
             return _genres;
         }
 
-        public async Task<Genres> GetGenreById(int Id) {
+        public async Task<Genres> GetGenreById(int Id)
+        {
 
             await Task.Delay(1);
             return _genres.FirstOrDefault(x => x.id == Id);
+        }
+
+        public void AddGenre(Genres genre)
+        {
+            genre.id = _genres.Count+1;
+            _genres.Add(genre);
+
         }
     }
 }
