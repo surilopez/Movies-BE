@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Movies_BE.Entities;
 using Movies_BE.Filters;
-using Movies_BE.Repos;
+
 
 namespace Movies_BE.Controllers
 {
@@ -18,60 +18,46 @@ namespace Movies_BE.Controllers
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GenresController : ControllerBase
     {
-        private readonly IRepos repos;
+        
         private readonly ILogger<GenresController> logger;
 
-        public GenresController(IRepos repos, ILogger<GenresController> logger)
+        public GenresController(ILogger<GenresController> logger)
         {
-            this.repos = repos;
+            
             this.logger = logger;
         }
 
-        [HttpGet]
-        [HttpGet("AllGenres")]
-        [HttpGet("/AllGenres")]
-        [ServiceFilter(typeof(MyActionFilter))]
+        [HttpGet]        
         public ActionResult<List<Genres>> Get()
         {
-            logger.LogDebug("Getting Genres");
-            return repos.GetGenres();
+
+            return new List<Genres>() { new Genres() { id = 1, Name = "Comedy" } };
         }
 
         [HttpGet("{Id:int}")]
         public async Task<ActionResult<Genres>> Get(int Id)
         {
 
-            logger.LogInformation($"Get Genre by ID: {Id}");
-
-            var genre = await repos.GetGenreById(Id);
-
-            if (genre == null)
-            {
-                throw new ApplicationException($"There are not genre to show with Id: { Id }");
-                logger.LogWarning($"There are not genre to show with Id: {Id}");
-                return NotFound();
-            }
-            return genre;
+            throw new NotImplementedException();
         }
 
         [HttpPost]
         public ActionResult Post([FromBody] Genres genre)
         {
 
-            repos.AddGenre(genre);
-            return NoContent();
+            throw new NotImplementedException(); ;
         }
         [HttpPut]
         public ActionResult Put([FromBody] Genres genre)
         {
 
-            return NoContent();
+            throw new NotImplementedException();
         }
 
         [HttpDelete]
         public ActionResult Delete()
         {
-            return NoContent();
+            throw new NotImplementedException();
         }
     }
 }

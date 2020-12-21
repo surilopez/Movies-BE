@@ -13,7 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Movies_BE.Filters;
-using Movies_BE.Repos;
+
 
 namespace Movies_BE
 {
@@ -29,10 +29,9 @@ namespace Movies_BE
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
-            services.AddScoped<IRepos, RepoOnMemory>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();          
 
-            services.AddTransient<MyActionFilter>();
+          
             services.AddControllers(options=> {
                 options.Filters.Add(typeof(ExceptionFilter));
             });
