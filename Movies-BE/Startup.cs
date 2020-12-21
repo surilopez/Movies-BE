@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,17 @@ namespace Movies_BE
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddDbContext<ApplicationDBContext>(options => 
+            options.UseSqlServer(Configuration.GetConnectionString("default_connection")));
+
+            services.AddCors(options => {
+                var front_end_URL = Configuration.GetValue<string>("front_end_URL");
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(front_end_URL).AllowAnyMethod().AllowAnyHeader();
+                });
+            });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();          
 
           
@@ -54,6 +66,7 @@ namespace Movies_BE
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors();
             app.UseAuthentication();
 
             app.UseAuthorization();
