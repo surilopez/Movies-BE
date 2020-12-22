@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using Movies_BE.DTOs;
 using Movies_BE.Entities;
 using Movies_BE.Filters;
-
+using Movies_BE.Utilities;
 
 namespace Movies_BE.Controllers
 {
@@ -35,11 +35,13 @@ namespace Movies_BE.Controllers
         }
 
         [HttpGet]        
-        public async Task<ActionResult<List<GenresDTO>>> Get()
+        public async Task<ActionResult<List<GenresDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
         {
 
-            var genres= await context.Genres.ToListAsync();
-          
+            var queryable= context.Genres.AsQueryable();
+            await HttpContext.InsertPaginationParamsOnHeader(queryable);
+            var genres = queryable.OrderBy(x => x.Name).Pagin(paginationDTO).ToListAsync();
+
             return mapper.Map<List<GenresDTO>>(genres);
 
         }

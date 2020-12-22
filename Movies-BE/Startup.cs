@@ -40,7 +40,8 @@ namespace Movies_BE
                 var front_end_URL = Configuration.GetValue<string>("front_end_URL");
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins(front_end_URL).AllowAnyMethod().AllowAnyHeader();
+                    builder.WithOrigins(front_end_URL).AllowAnyMethod().AllowAnyHeader()
+                    .WithExposedHeaders(new string[] { "TotalRecords" });
                 });
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();          
