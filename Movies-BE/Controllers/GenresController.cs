@@ -40,8 +40,8 @@ namespace Movies_BE.Controllers
 
             var queryable= context.Genres.AsQueryable();
             await HttpContext.InsertPaginationParamsOnHeader(queryable);
-            var genres = queryable.OrderBy(x => x.Name).Pagin(paginationDTO).ToListAsync();
-
+            var genres = await queryable.OrderBy(x => x.Name).Pagin(paginationDTO).ToListAsync();
+            
             return mapper.Map<List<GenresDTO>>(genres);
 
         }
