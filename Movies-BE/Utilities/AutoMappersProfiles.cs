@@ -14,6 +14,10 @@ namespace Movies_BE.Utilities
         {
             CreateMap<Genres, GenresDTO>().ReverseMap();
             CreateMap<GenresAddDTO, Genres>();
+
+            CreateMap<Actor, ActorDTO>().ReverseMap();
+            CreateMap<ActorAddDTO, Actor>()
+                .ForMember(x => x.Photo, options => options.Ignore());
         }
     }
 }
