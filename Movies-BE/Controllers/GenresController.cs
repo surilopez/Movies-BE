@@ -84,10 +84,17 @@ namespace Movies_BE.Controllers
 
         }
 
-        [HttpDelete]
-        public ActionResult Delete()
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            var genre = await context.Genres.AnyAsync(x => x.id == id);
+            if (!genre)
+            {
+                return NotFound();
+            }
+            context.Remove(new Genres() { id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
