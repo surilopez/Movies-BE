@@ -15,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Movies_BE.Filters;
-
+using Movies_BE.Utilities;
 
 namespace Movies_BE
 {
@@ -32,6 +32,9 @@ namespace Movies_BE
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddTransient<IStorageFile, LocalStorage>();
+            services.AddHttpContextAccessor();
 
             services.AddDbContext<ApplicationDBContext>(options => 
             options.UseSqlServer(Configuration.GetConnectionString("default_connection")));
@@ -67,6 +70,8 @@ namespace Movies_BE
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseRouting();
             app.UseCors();
