@@ -22,11 +22,11 @@ namespace Movies_BE.Controllers
             this.mapper = mapper;
         }
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ActorAddDTO actorAddDTO)
+        public async Task<ActionResult> Post([FromForm] ActorAddDTO actorAddDTO)
         {
-            var actor = mapper.Map<Actor>(actorAddDTO);
-            context.Add(actor);
-            await context.SaveChangesAsync();
+            //var actor = mapper.Map<Actor>(actorAddDTO);
+            //context.Add(actor);
+            //await context.SaveChangesAsync();
             return NoContent();
 
         }
