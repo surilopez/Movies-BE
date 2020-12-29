@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Movies_BE.DTOs;
 using Movies_BE.Entities;
 using Movies_BE.Utilities;
@@ -28,6 +29,15 @@ namespace Movies_BE.Controllers
             this.mapper = mapper;
             this.storageFile = storageFile;
         }
+        [HttpGet]
+        public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginationDTO paginationDTO) {
+            var queryable = context.Actors.AsQueryable();
+            await HttpContext.InsertPaginationParamsOnHeader(queryable);
+            var actors = await queryable.OrderBy(x => x.Name).Pagin(paginationDTO).ToListAsync();
+
+            return mapper.Map<List<ActorDTO>>(actors);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] ActorAddDTO actorAddDTO)
         {
