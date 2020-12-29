@@ -53,5 +53,18 @@ namespace Movies_BE.Controllers
             return NoContent();
 
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var exist = await context.Actors.AnyAsync(x => x.id == id);
+            if (!exist)
+            {
+                return NotFound();
+            }
+            context.Remove(new Actor() { id = id });
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
