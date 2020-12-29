@@ -21,7 +21,7 @@ namespace Movies_BE.Controllers
         private readonly string container = "actors";
 
         public ActorsController(
-            ApplicationDBContext context, 
+            ApplicationDBContext context,
             IMapper mapper,
             IStorageFile storageFile)
         {
@@ -30,7 +30,8 @@ namespace Movies_BE.Controllers
             this.storageFile = storageFile;
         }
         [HttpGet]
-        public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginationDTO paginationDTO) {
+        public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
+        {
             var queryable = context.Actors.AsQueryable();
             await HttpContext.InsertPaginationParamsOnHeader(queryable);
             var actors = await queryable.OrderBy(x => x.Name).Pagin(paginationDTO).ToListAsync();
@@ -38,18 +39,55 @@ namespace Movies_BE.Controllers
             return mapper.Map<List<ActorDTO>>(actors);
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ActorDTO>> Get(int Id)
+        {
+            var actor = await context.Actors.FirstOrDefaultAsync(x => x.id == Id);
+
+            if (actor == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<ActorDTO>(actor);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] ActorAddDTO actorAddDTO)
         {
             var actor = mapper.Map<Actor>(actorAddDTO);
 
-            if (actorAddDTO.Photo != null)
+            if (actorAddDTO.ActorImage != null)
             {
-               actor.Photo= await storageFile.SaveFiles(container, actorAddDTO.Photo);
+                actor.Photo = await storageFile.SaveFiles(container, actorAddDTO.ActorImage);
+            }
+          
+                context.Add(actor);
+           
+            
+            await context.SaveChangesAsync();
+            return NoContent();
+
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int id, [FromForm] ActorAddDTO actorAddDTO)
+        {
+            var actor = await context.Actors.FirstOrDefaultAsync(x => x.id == id);
+
+            if (actor == null)
+            {
+                return NotFound();
             }
 
-            context.Add(actor);
+            actor = mapper.Map(actorAddDTO, actor);
+
+            if (actorAddDTO.ActorImage != null)
+            {
+                actor.Photo = await storageFile.EditFiles(container, actorAddDTO.ActorImage, actor.Photo);
+            }
+
             await context.SaveChangesAsync();
+
             return NoContent();
 
         }
@@ -57,13 +95,15 @@ namespace Movies_BE.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var exist = await context.Actors.AnyAsync(x => x.id == id);
-            if (!exist)
+            var exist = await context.Actors.FirstAsync(x => x.id == id);
+            if (exist == null)
             {
                 return NotFound();
             }
-            context.Remove(new Actor() { id = id });
+            context.Remove(exist);
             await context.SaveChangesAsync();
+
+            await storageFile.DeleteFiles(exist.Photo, container);
             return NoContent();
         }
     }

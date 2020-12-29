@@ -14,7 +14,7 @@ namespace Movies_BE.DTOs
         public string Name { get; set; }
         public string Biography { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public IFormFile Photo { get; set; }
+        public IFormFile ActorImage { get; set; }
         //public string Photo { get; set; }
     }
 }
