@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Movies_BE.DTOs;
 using Movies_BE.Entities;
+using NetTopologySuite.Geometries;
 
 namespace Movies_BE.Utilities
 {
     public class AutoMappersProfiles:Profile
     {
-        public AutoMappersProfiles()
+        public AutoMappersProfiles(GeometryFactory geometryFactory )
         {
             CreateMap<Genres, GenresDTO>().ReverseMap();
             CreateMap<GenresAddDTO, Genres>();
@@ -18,6 +19,9 @@ namespace Movies_BE.Utilities
             CreateMap<Actor, ActorDTO>().ReverseMap();
             CreateMap<ActorAddDTO, Actor>()
                 .ForMember(x => x.Photo, options => options.Ignore());
+
+            CreateMap<TheaterAddDTO, Theaters>()
+                .ForMember(x => x.Location, x => x.MapFrom(dto => geometryFactory.CreatePoint(new Coordinate(dto.Longitude, dto.Longitude))));
         }
     }
 }

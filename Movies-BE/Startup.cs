@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Movies_BE.Filters;
 using Movies_BE.Utilities;
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
 
 namespace Movies_BE
 {
@@ -32,14 +34,26 @@ namespace Movies_BE
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+            services.AddSingleton(provider =>
+                new MapperConfiguration(config =>
+                   {
+                       var geometryFactory = provider.GetRequiredService<GeometryFactory>();
+                       config.AddProfile(new AutoMappersProfiles(geometryFactory));
+                   }).CreateMapper());
 
-            services.AddTransient<IStorageFile,LocalStorage>();
+            services.AddSingleton<GeometryFactory>(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
+
+            services.AddTransient<IStorageFile, LocalStorage>();
             services.AddHttpContextAccessor();
 
-            services.AddDbContext<ApplicationDBContext>(options => 
-            options.UseSqlServer(Configuration.GetConnectionString("default_connection")));
+            services.AddDbContext<ApplicationDBContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("default_connection"),
+            sqlServer => sqlServer.UseNetTopologySuite()));
 
-            services.AddCors(options => {
+
+
+            services.AddCors(options =>
+            {
                 var front_end_URL = Configuration.GetValue<string>("front_end_URL");
                 options.AddDefaultPolicy(builder =>
                 {
@@ -47,10 +61,11 @@ namespace Movies_BE
                     .WithExposedHeaders(new string[] { "TotalRecords" });
                 });
             });
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();          
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 
-          
-            services.AddControllers(options=> {
+
+            services.AddControllers(options =>
+            {
                 options.Filters.Add(typeof(ExceptionFilter));
             });
             services.AddSwaggerGen(c =>

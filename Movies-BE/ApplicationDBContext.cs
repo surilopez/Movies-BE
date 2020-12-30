@@ -15,5 +15,7 @@ namespace Movies_BE
 
         public DbSet<Genres> Genres { get; set; }
         public DbSet<Actor> Actors { get; set; }
+        public DbSet<Theaters> Theaters { get; set; }
+
     }
 }
