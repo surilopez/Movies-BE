@@ -54,17 +54,21 @@ namespace Movies_BE.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] ActorAddDTO actorAddDTO)
         {
-            var actor = mapper.Map<Actor>(actorAddDTO);
-
-            if (actorAddDTO.ActorImage != null)
-            {
-                actor.Photo = await storageFile.SaveFiles(container, actorAddDTO.ActorImage);
-            }
-          
-                context.Add(actor);
            
-            
-            await context.SaveChangesAsync();
+
+
+                var actor = mapper.Map<Actor>(actorAddDTO);
+
+
+                if (actorAddDTO.Photo != null)
+                {
+                    actor.Photo = await storageFile.SaveFiles(container, actorAddDTO.Photo);
+                }
+
+                context.Add(actor);
+
+                await context.SaveChangesAsync();
+        
             return NoContent();
 
         }
@@ -81,9 +85,9 @@ namespace Movies_BE.Controllers
 
             actor = mapper.Map(actorAddDTO, actor);
 
-            if (actorAddDTO.ActorImage != null)
+            if (actorAddDTO.Photo != null)
             {
-                actor.Photo = await storageFile.EditFiles(container, actorAddDTO.ActorImage, actor.Photo);
+                actor.Photo = await storageFile.EditFiles(container, actorAddDTO.Photo, actor.Photo);
             }
 
             await context.SaveChangesAsync();
@@ -95,7 +99,7 @@ namespace Movies_BE.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var exist = await context.Actors.FirstAsync(x => x.id == id);
+            var exist = await context.Actors.FirstOrDefaultAsync(x => x.id == id);
             if (exist == null)
             {
                 return NotFound();

@@ -33,7 +33,7 @@ namespace Movies_BE
         {
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddTransient<IStorageFile, LocalStorage>();
+            services.AddTransient<IStorageFile,LocalStorage>();
             services.AddHttpContextAccessor();
 
             services.AddDbContext<ApplicationDBContext>(options => 
