@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Movies_BE.DTOs;
 using Movies_BE.Entities;
+using Movies_BE.Utilities;
 
 namespace Movies_BE.Controllers
 {
@@ -24,12 +26,37 @@ namespace Movies_BE.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<TheaterDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
+        {
+
+            var queryable = context.Theaters.AsQueryable();
+            await HttpContext.InsertPaginationParamsOnHeader(queryable);
+            var theater = await queryable.OrderBy(x => x.Name).Pagin(paginationDTO).ToListAsync();
+
+            return mapper.Map<List<TheaterDTO>>(theater);
+
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] TheaterAddDTO theaterAddDTO)
         {
             var theather = mapper.Map<Theaters>(theaterAddDTO);
             context.Add(theather);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var theater = await context.Theaters.AnyAsync(x => x.id == id);
+            if (!theater)
+            {
+                return NotFound();
+            }
+            context.Remove(new Theaters() { id = id });
             await context.SaveChangesAsync();
             return NoContent();
         }

@@ -22,6 +22,10 @@ namespace Movies_BE.Utilities
 
             CreateMap<TheaterAddDTO, Theaters>()
                 .ForMember(x => x.Location, x => x.MapFrom(dto => geometryFactory.CreatePoint(new Coordinate(dto.Longitude, dto.Longitude))));
+
+            CreateMap<Theaters, TheaterDTO>()
+                .ForMember(x => x.Latitude, dto => dto.MapFrom(field => field.Location.Y))
+                .ForMember(x => x.Longitude, dto => dto.MapFrom(field => field.Location.X));
         }
     }
 }
