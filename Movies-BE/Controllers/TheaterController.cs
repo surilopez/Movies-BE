@@ -38,6 +38,18 @@ namespace Movies_BE.Controllers
 
         }
 
+        [HttpGet("{Id:int}")]
+        public async Task<ActionResult<TheaterDTO>> Get(int Id)
+        {
+            var theater = await context.Theaters.FirstOrDefaultAsync(x => x.id == Id);
+
+            if (theater == null)
+            {
+                return NotFound();
+            }
+            return mapper.Map<TheaterDTO>(theater);
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] TheaterAddDTO theaterAddDTO)
@@ -47,6 +59,25 @@ namespace Movies_BE.Controllers
             await context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int Id, [FromBody] TheaterAddDTO theaterAdd)
+        {
+            var theater = await context.Theaters.FirstOrDefaultAsync(x => x.id == Id);
+
+            if (theater == null)
+            {
+                return NotFound();
+            }
+
+            theater = mapper.Map(theaterAdd, theater);
+
+            await context.SaveChangesAsync();
+
+            return NoContent();
+
+        }
+
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)

@@ -21,7 +21,7 @@ namespace Movies_BE.Utilities
                 .ForMember(x => x.Photo, options => options.Ignore());
 
             CreateMap<TheaterAddDTO, Theaters>()
-                .ForMember(x => x.Location, x => x.MapFrom(dto => geometryFactory.CreatePoint(new Coordinate(dto.Longitude, dto.Longitude))));
+                .ForMember(x => x.Location, x => x.MapFrom(dto => geometryFactory.CreatePoint(new Coordinate(dto.Longitude, dto.Latitude))));
 
             CreateMap<Theaters, TheaterDTO>()
                 .ForMember(x => x.Latitude, dto => dto.MapFrom(field => field.Location.Y))
