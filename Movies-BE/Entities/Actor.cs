@@ -15,5 +15,7 @@ namespace Movies_BE.Entities
         public string Biography { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Photo { get; set; }
+        public List<MoviesActors> moviesActors { get; set; }
+       
     }
 }

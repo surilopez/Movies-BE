@@ -14,7 +14,8 @@ namespace Movies_BE.Entities
         [StringLength(maximumLength:50)]
         [FirstLetterUppercase]
         public string Name { get; set; }
+        public List<MoviesGenres> moviesGenres { get; set; }
+        
 
-     
     }
 }

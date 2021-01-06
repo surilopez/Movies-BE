@@ -15,9 +15,9 @@ namespace Movies_BE.Entities
         [StringLength(maximumLength:75)]
         public string Name { get; set; }
         public Point Location { get; set; }
-     
+
+        public List<MoviesTheaters> moviesTheaters { get; set; }
 
 
- 
     }
 }
