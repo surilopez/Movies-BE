@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Movies_BE.DTOs;
 using Movies_BE.Entities;
 using Movies_BE.Utilities;
@@ -12,7 +13,7 @@ namespace Movies_BE.Controllers
 {
     [ApiController]
     [Route("api/Movies")]
-    public class MoviesController: ControllerBase
+    public class MoviesController : ControllerBase
     {
         private readonly ApplicationDBContext context;
         private readonly IMapper mapper;
@@ -27,8 +28,8 @@ namespace Movies_BE.Controllers
         }
 
         [HttpPost]
-
-        public async Task<ActionResult> Post([FromForm] MovieAddDTO movieAddDTO) {
+        public async Task<ActionResult> Post([FromForm] MovieAddDTO movieAddDTO)
+        {
             var movie = mapper.Map<Movies>(movieAddDTO);
 
             if (movieAddDTO.Img != null)
@@ -43,8 +44,22 @@ namespace Movies_BE.Controllers
 
         }
 
-        private void WriteActorsByOrder(Movies movie) {
-            if (movie.moviesActors!=null)
+        [HttpGet("PostGet")]
+        public async Task<ActionResult<MoviesPostGetDTO>> PostGet()
+        {
+            var theaters = await context.Theaters.ToListAsync();
+            var genres = await context.Genres.ToListAsync();
+
+            var theatersDTO = mapper.Map<List<TheaterDTO>>(theaters);
+            var genresDTO = mapper.Map<List<GenresDTO>>(genres);
+
+            return new MoviesPostGetDTO() { theaters = theatersDTO, genres = genresDTO };
+        }
+
+
+        private void WriteActorsByOrder(Movies movie)
+        {
+            if (movie.moviesActors != null)
             {
                 for (int i = 0; i < movie.moviesActors.Count; i++)
                 {
