@@ -10,5 +10,7 @@ namespace Movies_BE.DTOs
         public int id { get; set; }
         public string Name { get; set; }
         public string Photo { get; set; }
+        public string Character { get; set; }
+        public int Order { get; set; }
     }
 }

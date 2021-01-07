@@ -27,6 +27,26 @@ namespace Movies_BE.Controllers
             this.storageFile = storageFile;
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<MovieDTO>> Get(int id)
+        {
+            var movie = await context.Movies
+                .Include(x => x.moviesGenres).ThenInclude(x => x.genre)
+                .Include(x => x.moviesActors).ThenInclude(x => x.actor)
+                .Include(x => x.moviesTheaters).ThenInclude(x => x.theater)
+                .FirstOrDefaultAsync(x => x.id == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            var movieDTO = mapper.Map<MovieDTO>(movie);
+            movieDTO.movieActorsDTO.OrderBy(x => x.Order).ToList();
+
+            return movieDTO;
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] MovieAddDTO movieAddDTO)
         {

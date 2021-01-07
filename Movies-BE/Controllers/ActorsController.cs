@@ -70,16 +70,17 @@ namespace Movies_BE.Controllers
 
         }
 
-        [HttpPost("SearchByName")]
-        public async Task<ActionResult<List<MovieActorDTO>>> SearchByName(string actorName)
+        [HttpPost("searchByName")]
+        public async Task<ActionResult<List<MovieActorDTO>>> SearchByName([FromBody]string name)
         {
-            if (string.IsNullOrWhiteSpace(actorName))
+          
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return new List<MovieActorDTO>();
             }
 
             return await context.Actors
-                .Where(x => x.Name.Contains(actorName))
+                .Where(x => x.Name.Contains(name))
                 .Select(x => new MovieActorDTO { id = x.id, Name = x.Name, Photo = x.Photo })
                 .Take(5)
                 .ToListAsync();
