@@ -54,23 +54,35 @@ namespace Movies_BE.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromForm] ActorAddDTO actorAddDTO)
         {
-           
+            var actor = mapper.Map<Actor>(actorAddDTO);
 
 
-                var actor = mapper.Map<Actor>(actorAddDTO);
+            if (actorAddDTO.Photo != null)
+            {
+                actor.Photo = await storageFile.SaveFiles(container, actorAddDTO.Photo);
+            }
 
+            context.Add(actor);
 
-                if (actorAddDTO.Photo != null)
-                {
-                    actor.Photo = await storageFile.SaveFiles(container, actorAddDTO.Photo);
-                }
+            await context.SaveChangesAsync();
 
-                context.Add(actor);
-
-                await context.SaveChangesAsync();
-        
             return NoContent();
 
+        }
+
+        [HttpPost("SearchByName")]
+        public async Task<ActionResult<List<MovieActorDTO>>> SearchByName(string actorName)
+        {
+            if (string.IsNullOrWhiteSpace(actorName))
+            {
+                return new List<MovieActorDTO>();
+            }
+
+            return await context.Actors
+                .Where(x => x.Name.Contains(actorName))
+                .Select(x => new MovieActorDTO { id = x.id, Name = x.Name, Photo = x.Photo })
+                .Take(5)
+                .ToListAsync();
         }
 
         [HttpPut("{id:int}")]
