@@ -8,7 +8,7 @@ namespace Movies_BE.DTOs
     public class MovieDTO
     {
         public int id { get; set; }
-               public string Title { get; set; }
+        public string Title { get; set; }
         public string Info { get; set; }
         public string Trailer { get; set; }
         public bool onTheater { get; set; }

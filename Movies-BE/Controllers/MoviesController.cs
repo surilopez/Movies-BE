@@ -27,6 +27,24 @@ namespace Movies_BE.Controllers
             this.storageFile = storageFile;
         }
 
+        //------------------------Endpoints POST-----------------------------------------
+        [HttpPost]
+        public async Task<ActionResult<int>> Post([FromForm] MovieAddDTO movieAddDTO)
+        {
+            var movie = mapper.Map<Movies>(movieAddDTO);
+
+            if (movieAddDTO.Img != null)
+            {
+                movie.Img = await storageFile.SaveFiles(container, movieAddDTO.Img);
+            }
+
+            WriteActorsByOrder(movie);
+            context.Add(movie);
+            await context.SaveChangesAsync();
+            return movie.id;
+
+        }
+        //------------------------Endpoints GET-----------------------------------------
         [HttpGet]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
@@ -50,9 +68,6 @@ namespace Movies_BE.Controllers
             result.onTheaters = mapper.Map<List<MovieDTO>>(onTheaters);
 
             return result;
-
-
-
         }
 
         [HttpGet("{id:int}")]
@@ -75,26 +90,9 @@ namespace Movies_BE.Controllers
             return movieDTO;
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post([FromForm] MovieAddDTO movieAddDTO)
-        {
-            var movie = mapper.Map<Movies>(movieAddDTO);
-
-            if (movieAddDTO.Img != null)
-            {
-                movie.Img = await storageFile.SaveFiles(container, movieAddDTO.Img);
-            }
-
-            WriteActorsByOrder(movie);
-            context.Add(movie);
-            await context.SaveChangesAsync();
-            return NoContent();
-
-        }
-
         [HttpGet("PostGet")]
         public async Task<ActionResult<MoviesPostGetDTO>> PostGet()
-         {
+        {
             var theaters = await context.Theaters.ToListAsync();
             var genres = await context.Genres.ToListAsync();
 
@@ -140,6 +138,43 @@ namespace Movies_BE.Controllers
 
         }
 
+        [HttpGet("Filters")]
+
+        public async Task<ActionResult<List<MovieDTO>>> Filters([FromQuery] MoviesFiltersDTO moviesFiltersDTO)
+        {
+            var queriablesMovies = context.Movies.AsQueryable();
+
+            if (!string.IsNullOrEmpty(moviesFiltersDTO.Title))
+            {
+                queriablesMovies = queriablesMovies.Where(x => x.Title.Contains(moviesFiltersDTO.Title));
+            }
+
+            if (moviesFiltersDTO.onTheater)
+            {
+                queriablesMovies = queriablesMovies.Where(x => x.onTheater);
+            }
+
+            if (moviesFiltersDTO.commingSoom)
+            {
+                queriablesMovies = queriablesMovies.Where(x => x.ReleaseDate > DateTime.Today);
+            }
+
+            if (moviesFiltersDTO.genreID!=0)
+            {
+                queriablesMovies = queriablesMovies
+                    .Where(x => x.moviesGenres.Select(g=>g.GenreID).Contains(moviesFiltersDTO.genreID));
+            }
+
+            await HttpContext.InsertPaginationParamsOnHeader(queriablesMovies);
+
+            var movies = await queriablesMovies.Pagin(moviesFiltersDTO.paginationDTO).ToListAsync();
+
+            return mapper.Map<List<MovieDTO>>(movies);
+
+        }
+
+
+        //------------------------Endpoints PUT-----------------------------------------
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromForm] MovieAddDTO movieAddDTO)
         {
@@ -166,6 +201,10 @@ namespace Movies_BE.Controllers
             return NoContent();
         }
 
+
+
+
+        //------------------------OTHERS FUNCTIONS-----------------------------------------
         private void WriteActorsByOrder(Movies movie)
         {
             if (movie.moviesActors != null)
