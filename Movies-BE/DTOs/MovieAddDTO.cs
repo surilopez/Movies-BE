@@ -14,7 +14,7 @@ namespace Movies_BE.DTOs
 
         [Required]
         [StringLength(maximumLength: 300)]
-        public string Title { get; set; }
+        public string title { get; set; }
         public string Info { get; set; }
         public string Trailer { get; set; }
         public bool onTheater { get; set; }

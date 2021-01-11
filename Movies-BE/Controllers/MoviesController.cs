@@ -94,7 +94,7 @@ namespace Movies_BE.Controllers
 
         [HttpGet("PostGet")]
         public async Task<ActionResult<MoviesPostGetDTO>> PostGet()
-        {
+         {
             var theaters = await context.Theaters.ToListAsync();
             var genres = await context.Genres.ToListAsync();
 
@@ -110,7 +110,7 @@ namespace Movies_BE.Controllers
             var movieAR = await this.Get(id);
             if (movieAR.Result is NotFoundResult)
             {
-                return NotFound();
+                return NotFound("eeeeeeee");
             }
 
             var movie = movieAR.Value;
@@ -140,7 +140,7 @@ namespace Movies_BE.Controllers
 
         }
 
-        [HttpPut("id:int")]
+        [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromForm] MovieAddDTO movieAddDTO)
         {
             var movie = await context.Movies
