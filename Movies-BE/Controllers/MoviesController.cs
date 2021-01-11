@@ -34,8 +34,8 @@ namespace Movies_BE.Controllers
             var today = DateTime.Today;
 
             var comingSoon = await context.Movies
-                .Where(m=> m.ReleaseDate > today)
-                .OrderBy(m=>m.ReleaseDate)
+                .Where(m => m.ReleaseDate > today)
+                .OrderBy(m => m.ReleaseDate)
                 .Take(top)
                 .ToListAsync();
 
@@ -104,6 +104,67 @@ namespace Movies_BE.Controllers
             return new MoviesPostGetDTO() { theaters = theatersDTO, genres = genresDTO };
         }
 
+        [HttpGet("PutGet")]
+        public async Task<ActionResult<MoviePutGetDTO>> PutGet(int id)
+        {
+            var movieAR = await this.Get(id);
+            if (movieAR.Result is NotFoundResult)
+            {
+                return NotFound();
+            }
+
+            var movie = movieAR.Value;
+
+            var selectedGenresID = movie.genresDTO.Select(g => g.id).ToList();
+            var noSelectedGenres = await context.Genres
+                .Where(g => !selectedGenresID.Contains(g.id))
+                .ToListAsync();
+
+            var selectedTheaterID = movie.theaterDTO.Select(t => t.id).ToList();
+            var noSelectedTheater = await context.Theaters
+                .Where(t => !selectedTheaterID.Contains(t.id))
+                .ToListAsync();
+
+            var noselectedGenresDTO = mapper.Map<List<GenresDTO>>(noSelectedGenres);
+            var noSelectedTheaterDTO = mapper.Map<List<TheaterDTO>>(noSelectedTheater);
+
+            var result = new MoviePutGetDTO();
+            result.movie = movie;
+            result.selectedGenresDTO = movie.genresDTO;
+            result.noselectedGenresDTO = noselectedGenresDTO;
+            result.selectedTheaterDTO = movie.theaterDTO;
+            result.noSelectedTheaterDTO = noSelectedTheaterDTO;
+            result.movieActorsDTO = movie.movieActorsDTO;
+
+            return result;
+
+        }
+
+        [HttpPut("id:int")]
+        public async Task<ActionResult> Put(int id, [FromForm] MovieAddDTO movieAddDTO)
+        {
+            var movie = await context.Movies
+                .Include(ma => ma.moviesActors)
+                .Include(mg => mg.moviesGenres)
+                .Include(mt => mt.moviesTheaters)
+                .FirstOrDefaultAsync(x => x.id == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+            movie = mapper.Map(movieAddDTO, movie);
+
+            if (movieAddDTO.Img != null)
+            {
+                movie.Img = await storageFile.EditFiles(container, movieAddDTO.Img, movie.Img);
+            }
+
+            WriteActorsByOrder(movie);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
         private void WriteActorsByOrder(Movies movie)
         {
