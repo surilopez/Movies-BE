@@ -27,6 +27,34 @@ namespace Movies_BE.Controllers
             this.storageFile = storageFile;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<LandingPageDTO>> Get()
+        {
+            var top = 6;
+            var today = DateTime.Today;
+
+            var comingSoon = await context.Movies
+                .Where(m=> m.ReleaseDate > today)
+                .OrderBy(m=>m.ReleaseDate)
+                .Take(top)
+                .ToListAsync();
+
+            var onTheaters = await context.Movies
+                .Where(m => m.onTheater)
+                .OrderBy(m => m.ReleaseDate)
+                .Take(top)
+                .ToListAsync();
+
+            var result = new LandingPageDTO();
+            result.commingSoom = mapper.Map<List<MovieDTO>>(comingSoon);
+            result.onTheaters = mapper.Map<List<MovieDTO>>(onTheaters);
+
+            return result;
+
+
+
+        }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<MovieDTO>> Get(int id)
         {
