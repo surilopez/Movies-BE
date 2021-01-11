@@ -46,6 +46,15 @@ namespace Movies_BE.Controllers
 
         }
 
+        [HttpGet("allGenres")]
+        public async Task<ActionResult<List<GenresDTO>>> allGenres()
+        {
+            var genres = await context.Genres.ToListAsync();
+
+            return mapper.Map<List<GenresDTO>>(genres);
+
+        }
+
         [HttpGet("{Id:int}")]
         public async Task<ActionResult<GenresDTO>> Get(int Id)
         {
