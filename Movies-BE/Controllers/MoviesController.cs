@@ -159,10 +159,10 @@ namespace Movies_BE.Controllers
                 queriablesMovies = queriablesMovies.Where(x => x.ReleaseDate > DateTime.Today);
             }
 
-            if (moviesFiltersDTO.genreID!=0)
+            if (moviesFiltersDTO.genreID != 0)
             {
                 queriablesMovies = queriablesMovies
-                    .Where(x => x.moviesGenres.Select(g=>g.GenreID).Contains(moviesFiltersDTO.genreID));
+                    .Where(x => x.moviesGenres.Select(g => g.GenreID).Contains(moviesFiltersDTO.genreID));
             }
 
             await HttpContext.InsertPaginationParamsOnHeader(queriablesMovies);
@@ -201,7 +201,23 @@ namespace Movies_BE.Controllers
             return NoContent();
         }
 
+        //------------------------Endpoints DELETE-----------------------------------------
 
+        [HttpDelete("{id:int}")]
+
+        public async Task<ActionResult> Delete(int id)
+        {
+            var exist = await context.Movies.FirstOrDefaultAsync(x => x.id == id);
+            if (exist == null)
+            {
+                return NotFound();
+            }
+            context.Remove(exist);
+            await context.SaveChangesAsync();
+
+            await storageFile.DeleteFiles(exist.Img, container);
+            return NoContent();
+        }
 
 
         //------------------------OTHERS FUNCTIONS-----------------------------------------
