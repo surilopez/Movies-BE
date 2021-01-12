@@ -149,12 +149,12 @@ namespace Movies_BE.Controllers
                 queriablesMovies = queriablesMovies.Where(x => x.Title.Contains(moviesFiltersDTO.Title));
             }
 
-            if (moviesFiltersDTO.onTheater)
+            if (moviesFiltersDTO.onTheaters)
             {
                 queriablesMovies = queriablesMovies.Where(x => x.onTheater);
             }
 
-            if (moviesFiltersDTO.commingSoom)
+            if (moviesFiltersDTO.commingSoon)
             {
                 queriablesMovies = queriablesMovies.Where(x => x.ReleaseDate > DateTime.Today);
             }
