@@ -72,7 +72,7 @@ namespace Movies_BE.Controllers
         {
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Email,credentials.email),
+                new Claim("email",credentials.email)
             };
 
             var user = await userManager.FindByEmailAsync(credentials.email);
