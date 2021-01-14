@@ -35,6 +35,7 @@ namespace Movies_BE
         public DbSet<MoviesActors> MoviesActors { get; set; }
         public DbSet<MoviesGenres> MoviesGenres { get; set; }
         public DbSet<MoviesTheaters> MoviesTheaters { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
 
 
     }
