@@ -5,11 +5,16 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Movies_BE.DTOs;
+using Movies_BE.Utilities;
 
 namespace Movies_BE.Controllers
 {
@@ -20,16 +25,22 @@ namespace Movies_BE.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly IConfiguration configuration;
+        private readonly ApplicationDBContext context;
+        private readonly IMapper mapper;
 
         public AcountsController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ApplicationDBContext context,
+            IMapper mapper
             )
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.context = context;
+            this.mapper = mapper;
         }
 
         //-----------------------------Endpoints POST-----------------------------------------------------------------------------------------
@@ -55,17 +66,47 @@ namespace Movies_BE.Controllers
         public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] CredentialsUser credentials)
         {
             var result = await signInManager.PasswordSignInAsync(credentials.email, credentials.password,
-                isPersistent:false, lockoutOnFailure:false);
+                isPersistent: false, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
                 return await BuildToken(credentials);
             }
-            else {
+            else
+            {
                 return BadRequest("Login Failed");
             }
         }
 
+        [HttpPost("AddRoleAdmin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy ="isAdmin")]
+        public async Task<ActionResult> AddRoleAdminn([FromBody] string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            await userManager.AddClaimAsync(user, new Claim("role", "admin"));
+            return NoContent();
+        }
+
+        [HttpPost("RemoveRoleAdmin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
+        public async Task<ActionResult> RemoveRoleAdmin([FromBody] string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            await userManager.RemoveClaimAsync(user, new Claim("role", "admin"));
+            return NoContent();
+        }
+
+        //-----------------------------Endpoints GET-----------------------------------------------------------
+
+        [HttpGet("UserList")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
+        public async Task<ActionResult<List<UserDTO>>> UserList([FromQuery] PaginationDTO paginationDTO)
+        {
+            var queriable = context.Users.AsQueryable();
+            await HttpContext.InsertPaginationParamsOnHeader(queriable);
+            var users = await queriable.OrderBy(x => x.Email).Pagin(paginationDTO).ToListAsync();
+            return mapper.Map<List<UserDTO>>(users);
+        }
 
         //-------------------------OTHER FUNCTIONS-------------------------------------------------------------
         private async Task<AuthenticationResponse> BuildToken(CredentialsUser credentials)

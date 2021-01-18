@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Movies_BE.DTOs;
 using Movies_BE.Entities;
 using NetTopologySuite.Geometries;
@@ -37,6 +38,8 @@ namespace Movies_BE.Utilities
                 .ForMember(x => x.genresDTO, opt => opt.MapFrom(MapMoviesGenresDTO))
                 .ForMember(x => x.movieActorsDTO, opt => opt.MapFrom(MapMoviesActorsDTO))
                 .ForMember(x => x.theaterDTO, opt => opt.MapFrom(MapMoviesTheaterDTO));
+
+            CreateMap<IdentityUser, UserDTO>();
 
         }
 
