@@ -75,16 +75,20 @@ namespace Movies_BE
                 .AddJwtBearer(opt =>
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer=false,
-                    ValidateAudience=false,
-                    ValidateLifetime=true,
-                    ValidateIssuerSigningKey=true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(Configuration["jwtKey"])),
                     ClockSkew = TimeSpan.Zero
 
                 });
 
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("isAdmin", policy=>policy.RequireClaim("role","admin"));
+            });
 
             services.AddControllers(options =>
             {

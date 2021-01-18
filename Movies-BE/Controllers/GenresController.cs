@@ -18,7 +18,7 @@ namespace Movies_BE.Controllers
 {
     [Route("api/genres")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "isAdmin")]
     public class GenresController : ControllerBase
     {
         
@@ -47,6 +47,7 @@ namespace Movies_BE.Controllers
         }
 
         [HttpGet("allGenres")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<GenresDTO>>> allGenres()
         {
             var genres = await context.Genres.ToListAsync();
