@@ -17,5 +17,7 @@ namespace Movies_BE.DTOs
         public List<GenresDTO> genresDTO { get; set; }
         public List<MovieActorDTO> movieActorsDTO { get; set; }
         public List<TheaterDTO> theaterDTO { get; set; }
+        public int userVote { get; set; }
+        public double averageVote { get; set; }
     }
 }
