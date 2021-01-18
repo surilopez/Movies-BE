@@ -12,7 +12,7 @@ using Movies_BE.Entities;
 
 namespace Movies_BE.Controllers
 {
-    [Route("api/rating")]
+    [Route("api/Rating")]
     [ApiController]
     public class RatingsController : ControllerBase
     {

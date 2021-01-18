@@ -53,6 +53,7 @@ namespace Movies_BE.Controllers
         }
         //------------------------Endpoints GET-----------------------------------------
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
             var top = 6;
@@ -172,7 +173,7 @@ namespace Movies_BE.Controllers
         }
 
         [HttpGet("Filters")]
-
+        [AllowAnonymous]
         public async Task<ActionResult<List<MovieDTO>>> Filters([FromQuery] MoviesFiltersDTO moviesFiltersDTO)
         {
             var queriablesMovies = context.Movies.AsQueryable();
